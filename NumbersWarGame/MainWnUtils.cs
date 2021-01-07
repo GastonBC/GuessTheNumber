@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 
-namespace NumberWars
+namespace NumbersWarGame
 {
     public partial class MainWindow : Window
     {

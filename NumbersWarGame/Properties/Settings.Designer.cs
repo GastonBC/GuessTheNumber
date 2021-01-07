@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NumberWars.Properties
+namespace NumbersWarGame.Properties
 {
 
 

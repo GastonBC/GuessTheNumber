@@ -1,7 +1,7 @@
-﻿<Application x:Class="NumberWars.App"
+﻿<Application x:Class="NumbersWarGame.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:NumberWars"
+             xmlns:local="clr-namespace:NumbersWarGame"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          
