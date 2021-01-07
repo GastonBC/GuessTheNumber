@@ -7,7 +7,11 @@ using System.Windows.Controls;
 /*
  TODO: Make a drawing pane?
         simplify main window, it's weird and slow and ugly now
-       
+        clean canvas button
+        make line bordeaux and thicker
+        organize window with stacked panels
+        add stats: won games, failed games, steps record, steps average
+        save game state on closure
  */
 
 /*
@@ -29,6 +33,8 @@ namespace NumbersWarGame
 {
     public partial class MainWindow : Window
     {
+        Point currentPoint = new Point();
+
         string NPC_NUM;
         string PLAYER_NUM;
         int STEPS;
@@ -96,12 +102,15 @@ namespace NumbersWarGame
 
                 }
             }
+
             WriteGuessLn(tb_NumberTry.Text + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
             STEPS++;
 
             // Win condition
             if (GoodAmmount == NPC_NUM.Length)
             {
+                tb_NPCNumber.Text = NPC_NUM;
+
                 WriteGuessLn("");
                 WriteGuessLn($"You win! Number was {NPC_NUM}");
                 WriteGuessLn($"Steps taken {STEPS}");
@@ -159,6 +168,8 @@ namespace NumbersWarGame
             b_Guess.IsEnabled = false;
             b_GiveUp.IsEnabled = false;
             b_RandomDiff.IsEnabled = true;
+
+            paintSurface.Children.Clear();
         }
 
         private void RandomDiff_Click(object sender, RoutedEventArgs e)
@@ -190,6 +201,8 @@ namespace NumbersWarGame
             PLAYER_NUM = GetValidNumber(digits);
             NPC_NUM = GetValidNumber(digits);
 
+            // Numbers will be the same, so try again until it's different
+            // it's pseudo random
             while (PLAYER_NUM == NPC_NUM)
                 NPC_NUM = GetValidNumber(digits);
 
