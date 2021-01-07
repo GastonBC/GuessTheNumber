@@ -5,9 +5,24 @@ using System.Windows;
 using System.Windows.Controls;
 
 /*
- TODO: Make two consoles, one for goods and regulars, other for help messages
-        Make regulars check, with str.Count(f => (f == ch)), this can work for goods as well
-        Make a drawing pane?
+ TODO: Make a drawing pane?
+        simplify main window, it's weird and slow and ugly now
+        randomize player number button
+ */
+
+/*
+    NPC thinking > it has a list of 0 to 9. Takes the ammounts of digits needed to create a
+    valid number and tries it against yours.
+
+    special cases (on a 4 digit number)
+    0G - 0R removes all digits on those numbers and tries (x+y = 0)
+    again.
+    0G - 4R keep trying those numbers with different order
+    xG - yR if x + y = 4, those are all the numbers you need, keep trying with those
+
+
+    Then how to process good and regular numbers?
+
  */
 
 namespace GuessTheNumber
@@ -60,7 +75,7 @@ namespace GuessTheNumber
             int RegularAmmount = 0;
 
 
-            // First check good numbers
+            // First check good numbers. Check player index num against same index on npc
             for(int i = 0; i < GUESS_NUM.Length; i++)
             {
                if (NPC_NUM[i] == GUESS_NUM[i])
@@ -69,7 +84,22 @@ namespace GuessTheNumber
                 }
             }
 
-            WriteLn(tb_NumberTry.Text + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
+
+            // Then check regular numbers. Check each index agains all indexes of NPC_NUM
+            for (int i = 0; i < GUESS_NUM.Length; i++)
+            {
+                for (int n = 0; n < GUESS_NUM.Length; n++)
+                {
+                    // If it's a different index (that'd be a good number) and it's the
+                    // same number then increment a regular
+                    if (i != n && NPC_NUM[i] == GUESS_NUM[n])
+                    {
+                        RegularAmmount++;
+                    }
+
+                }
+            }
+            WriteGuessLn(tb_NumberTry.Text + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
         }
 
         private void ConfirmNum_Click(object sender, RoutedEventArgs e)
@@ -106,45 +136,29 @@ namespace GuessTheNumber
 
 
 
-        private void WriteLn(string text) // Invokes the console.text from the new thread and appends the line
-        {
+        
 
-            ConsoleLog.Dispatcher.BeginInvoke(new Action(() =>
-            { ConsoleLog.Text += text + Environment.NewLine; }));
+        private void GiveUp_Click(object sender, RoutedEventArgs e)
+        {
+            
         }
 
-        private bool RunNumberChecks(string NUMBER, bool messages)
+        private void Help_Click(object sender, RoutedEventArgs e)
         {
-            // First check if first digit is 0
-            if (NUMBER.First().ToString() == "0")
-            {
-                if (messages) WriteLn("Your number cannot begin with a 0");
-                return false;
-            }
+            HelpWindow HelpWn = new HelpWindow();
+            HelpWn.Show();
+        }
 
-            // And if all chars are numbers
-            for (int i = 0; i < NUMBER.Length; i++)
-            {
-                if (!Char.IsDigit(NUMBER[i]))
-                {
-                    if (messages) WriteLn("All characters must be digits");
-                    return false;
-                }
-            }
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            tb_NPCNumber.Text = "";
+            tb_PlayerNumber.Text = "";
+            tb_NumberTry.Text = "";
 
-            // And if a number is repeated
-            foreach (char ch in NUMBER)
-            {
-                int freq = NUMBER.Count(f => (f == ch));
+            GuessLog.Text = "";
+            ConsoleLog.Text = "";
 
-                if (freq > 1)
-                {
-                    if (messages) WriteLn("You can only use a digit once");
-                    return false;
-                }
-            }
-
-            return true;
+            b_Guess.IsEnabled = false;
         }
     }
 }
