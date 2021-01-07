@@ -20,7 +20,7 @@
         <StackPanel/>
         <StackPanel Grid.Column="1" Margin="10,0,0,0" Grid.ColumnSpan="3">
             <TextBox x:Name="tb_PlayerNumber" Height="23" TextWrapping="Wrap" IsEnabled="True" TextChanged="onPlayerTextChange"/>
-            <TextBox x:Name="tb_NPCNumber" Height="23" TextWrapping="Wrap" IsEnabled="False" TextChanged="onTextChange"/>
+            <TextBox x:Name="tb_NPCNumber" Height="23" TextWrapping="Wrap" IsEnabled="False"/>
         </StackPanel>
         <ScrollViewer Grid.Row="2" Grid.ColumnSpan="4">
             <TextBlock x:Name="ConsoleLog" Grid.ColumnSpan="2" Grid.Row="1" TextWrapping="Wrap" IsEnabled="False" Background="#FFFAFAFA"/>
