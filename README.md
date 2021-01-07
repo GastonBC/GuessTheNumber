@@ -1,6 +1,4 @@
-# GuessTheNumber
-Numbers war game
-
+# The Numbers War
 
 How to play:
 
