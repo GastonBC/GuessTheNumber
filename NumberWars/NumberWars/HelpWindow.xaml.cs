@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace GuessTheNumber
+namespace NumberWars
 {
     public partial class HelpWindow : Window
     {
@@ -29,7 +29,7 @@ namespace GuessTheNumber
                 "Those are your clues to guess your opponent's number.\n\n" +
 
                 "Rules\n" +
-                "· Minimum number length is 3\n" +
+                "· Minimum number length is 2, maximum is 10\n" +
                 "· Numbers can not start with a 0\n" +
                 "· Digits in the number can not repeat (eg 1231 is wrong)\n" +
                 "· Number can not contain letters\n";

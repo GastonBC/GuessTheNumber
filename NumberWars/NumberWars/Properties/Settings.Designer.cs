@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GuessTheNumber.Properties
+namespace NumberWars.Properties
 {
 
 

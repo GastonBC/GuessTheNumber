@@ -7,7 +7,7 @@ using System.Windows.Controls;
 /*
  TODO: Make a drawing pane?
         simplify main window, it's weird and slow and ugly now
-        randomize player number button
+       
  */
 
 /*
@@ -25,13 +25,13 @@ using System.Windows.Controls;
 
  */
 
-namespace GuessTheNumber
+namespace NumberWars
 {
     public partial class MainWindow : Window
     {
-
         string NPC_NUM;
         string PLAYER_NUM;
+        int STEPS;
 
         public MainWindow()
         {
@@ -41,21 +41,19 @@ namespace GuessTheNumber
 
         private void onPlayerTextChange(object sender, TextChangedEventArgs e)
         {
-            if (tb_PlayerNumber.Text.Length >= 3)
+            if (tb_PlayerNumber.Text.Length >= 2 && tb_PlayerNumber.Text.Length <= 10)
             {
-                tb_NumberTry.IsEnabled = true;
                 b_ConfirmPlayer.IsEnabled = true;
             }
             else
             {
-                tb_NumberTry.IsEnabled = false;
                 b_ConfirmPlayer.IsEnabled = false;
             }
         }
 
         private void onGuessTextChange(object sender, TextChangedEventArgs e)
         {
-            if (tb_NumberTry.Text.Length == tb_NPCNumber.Text.Length)
+            if (tb_NumberTry.Text.Length == NPC_NUM.Length)
             {
                 b_Guess.IsEnabled = true;
             }
@@ -69,21 +67,20 @@ namespace GuessTheNumber
         {
             string GUESS_NUM = tb_NumberTry.Text;
 
-            if(!RunNumberChecks(GUESS_NUM, true)) return;
+            if (GUESS_NUM == "" || RunNumberChecks(GUESS_NUM, true) == false) return;
 
             int GoodAmmount = 0;
             int RegularAmmount = 0;
 
 
             // First check good numbers. Check player index num against same index on npc
-            for(int i = 0; i < GUESS_NUM.Length; i++)
+            for (int i = 0; i < GUESS_NUM.Length; i++)
             {
-               if (NPC_NUM[i] == GUESS_NUM[i])
+                if (NPC_NUM[i] == GUESS_NUM[i])
                 {
                     GoodAmmount++;
                 }
             }
-
 
             // Then check regular numbers. Check each index agains all indexes of NPC_NUM
             for (int i = 0; i < GUESS_NUM.Length; i++)
@@ -100,6 +97,17 @@ namespace GuessTheNumber
                 }
             }
             WriteGuessLn(tb_NumberTry.Text + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
+            STEPS++;
+
+            // Win condition
+            if (GoodAmmount == NPC_NUM.Length)
+            {
+                WriteGuessLn("");
+                WriteGuessLn($"You win! Number was {NPC_NUM}");
+                WriteGuessLn($"Steps taken {STEPS}");
+                FreezeCommands();
+                return;
+            }
         }
 
         private void ConfirmNum_Click(object sender, RoutedEventArgs e)
@@ -112,35 +120,12 @@ namespace GuessTheNumber
                 return;
             }
 
+            NPC_NUM = GetValidNumber(PLAYER_NUM.Length);
+            while (PLAYER_NUM == NPC_NUM)
+                NPC_NUM = GetValidNumber(PLAYER_NUM.Length);
 
-            int min = Convert.ToInt32(1 * (Math.Pow(10d, PLAYER_NUM.Length - 1)));    // 1* (10^x-1) - 1.  eg: 1*(10^4) = 10.000
-            int max = Convert.ToInt32( (1 * (Math.Pow(10d, PLAYER_NUM.Length))) - 1); // 1* (10^x) - 1.  eg: 1*(10^5)-1 = 99.999
+            SessionStart();
 
-            Random rd = new Random();
-
-            bool isNumberWrong = true;
-
-            while (isNumberWrong)
-            {
-                NPC_NUM = rd.Next(min, max).ToString();
-                if (RunNumberChecks(NPC_NUM, false))
-                {
-                    isNumberWrong = false;
-                }
-            }
-
-            tb_NPCNumber.Text = NPC_NUM;
-
-            // b_ConfirmPlayer.IsEnabled = false;
-        }
-
-
-
-        
-
-        private void GiveUp_Click(object sender, RoutedEventArgs e)
-        {
-            
         }
 
         private void Help_Click(object sender, RoutedEventArgs e)
@@ -149,8 +134,19 @@ namespace GuessTheNumber
             HelpWn.Show();
         }
 
+
+        private void GiveUp_Click(object sender, RoutedEventArgs e)
+        {
+            tb_NPCNumber.Text = NPC_NUM;
+
+            WriteGuessLn("");
+            WriteGuessLn($"Oh no! Number was {NPC_NUM}");
+            FreezeCommands();
+        }
+
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
+            // Reset to initial state
             tb_NPCNumber.Text = "";
             tb_PlayerNumber.Text = "";
             tb_NumberTry.Text = "";
@@ -158,7 +154,47 @@ namespace GuessTheNumber
             GuessLog.Text = "";
             ConsoleLog.Text = "";
 
+            tb_PlayerNumber.IsEnabled = true;
+
             b_Guess.IsEnabled = false;
+            b_GiveUp.IsEnabled = false;
+            b_RandomDiff.IsEnabled = true;
+        }
+
+        private void RandomDiff_Click(object sender, RoutedEventArgs e)
+        {
+            Difficulty DiffWn = new Difficulty();
+            DiffWn.ShowDialog();
+
+            // Nothing chosen, nothing happens
+            if (DiffWn.Diff == null)
+            {
+                return;
+            }
+
+            int digits;
+            switch (DiffWn.Diff)
+            {
+                case Level.Easy:
+                    digits = 3;
+                    break;
+                default:
+                case Level.Normal:
+                    digits = 4;
+                    break;
+                case Level.Hard:
+                    digits = 8;
+                    break;
+            }
+
+            PLAYER_NUM = GetValidNumber(digits);
+            NPC_NUM = GetValidNumber(digits);
+
+            while (PLAYER_NUM == NPC_NUM)
+                NPC_NUM = GetValidNumber(digits);
+
+
+            SessionStart();
         }
     }
 }
