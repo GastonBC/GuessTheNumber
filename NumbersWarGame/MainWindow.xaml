@@ -4,53 +4,56 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Number Wars" Height="600" Width="650"
+        Title="Number Wars" Height="600" Width="650" 
         MinWidth="650"
         MinHeight="600">
     <Grid Margin="10,21,10,10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="78"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="10"/>
             <RowDefinition/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="5"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="110"/>
+            <ColumnDefinition Width="10"/>
             <ColumnDefinition/>
+            <ColumnDefinition Width="10"/>
             <ColumnDefinition Width="110"/>
         </Grid.ColumnDefinitions>
-        <StackPanel/>
-        <StackPanel Grid.Column="1" Margin="10,0,0,0" Grid.ColumnSpan="2">
-            <TextBox x:Name="tb_PlayerNumber" Height="23" TextWrapping="Wrap" IsEnabled="True" TextChanged="onPlayerTextChange" Margin="0,0,115,0"/>
-            <TextBox x:Name="tb_NPCNumber" Height="23" TextWrapping="Wrap" IsEnabled="False" Margin="0,0,115,0"/>
-        </StackPanel>
-        <ScrollViewer Grid.Row="2" Margin="0,0,0,0">
+
+
+        <TextBox x:Name="tb_PlayerNumber" TextWrapping="Wrap" IsEnabled="True" TextChanged="onPlayerTextChange" Margin="0,0,0,26" Grid.Column="2"/>
+        <TextBox x:Name="tb_NPCNumber" TextWrapping="Wrap" IsEnabled="False" Margin="0,26,0,0" Grid.Column="2"/>
+
+        <ScrollViewer Grid.Row="4" Margin="0,0,0,0">
             <TextBlock x:Name="ConsoleLog" Grid.ColumnSpan="2" Grid.Row="1" TextWrapping="Wrap" IsEnabled="False" Background="#FFFAFAFA"/>
         </ScrollViewer>
 
-        
 
-        <ScrollViewer Grid.Row="2" Margin="10,0,0,0" Grid.ColumnSpan="2" Grid.Column="1">
+
+        <ScrollViewer Grid.Row="4" Margin="2,0,0,0" Grid.ColumnSpan="3" Grid.Column="2">
             <TextBlock x:Name="GuessLog" Grid.ColumnSpan="2" Grid.Row="1" TextWrapping="Wrap" IsEnabled="False" Background="#FFFAFAFA" FontSize="20" FontWeight="Bold"/>
         </ScrollViewer>
 
-        <Canvas  x:Name="paintSurface" Grid.Row="2" Margin="10,0,25,0" Grid.ColumnSpan="2" Grid.Column="1" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1" >
+        <Canvas  x:Name="paintSurface" Grid.Row="4" Margin="2,0,25,0" Grid.ColumnSpan="3" Grid.Column="2" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1" >
             <Canvas.Background>
                 <SolidColorBrush Opacity="0" />
             </Canvas.Background>
         </Canvas>
 
-        <TextBox x:Name="tb_NumberTry" TextChanged="onGuessTextChange" IsEnabled="False" VerticalContentAlignment="Center" TextWrapping="Wrap"  Margin="10,51,0,0" Grid.Column="1" Grid.ColumnSpan="2"/>
-        <Button x:Name="b_ConfirmPlayer" Content="Confirm number" Click="ConfirmNum_Click" IsEnabled="False" Margin="0,0,0,32"/>
+        <TextBox x:Name="tb_NumberTry" TextChanged="onGuessTextChange" IsEnabled="False" VerticalContentAlignment="Center" TextWrapping="Wrap" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="2"/>
+        <Button x:Name="b_ConfirmPlayer" Content="Confirm number" Click="ConfirmNum_Click" IsEnabled="False"/>
 
-        <Button x:Name="b_RandomDiff" Content="Difficulty" Click="RandomDiff_Click" IsEnabled="True" Margin="0,0,0,32" Grid.Column="2"/>
+        <Button x:Name="b_RandomDiff" Content="Difficulty" Click="RandomDiff_Click" IsEnabled="True" Grid.Column="4"/>
 
-        <Button x:Name="b_Guess" Content="Guess" Click="Guess_Click" IsEnabled="False" Margin="0,51,0,0"/>
-        <Button x:Name="b_GiveUp" IsEnabled="False" Content="Give up" Click="GiveUp_Click" Grid.Row="4"/>
-        <Button Content="Help" Click="Help_Click" Grid.Row="4" Grid.Column="1" Margin="10,0,10,0"/>
-        <Button Content="Reset" Click="Reset_Click" Grid.Row="4" Grid.Column="2"/>
+        <Button x:Name="b_Guess" Content="Guess" Click="Guess_Click" IsEnabled="False" Grid.Row="2"/>
+        <Button x:Name="b_GiveUp" IsEnabled="False" Content="Give up" Click="GiveUp_Click" Grid.Row="6" Grid.RowSpan="2"/>
+        <Button Content="Help" Click="Help_Click" Grid.Row="6" Grid.Column="2" Grid.RowSpan="2"/>
+        <Button Content="Reset" Click="Reset_Click" Grid.Row="6" Grid.Column="4" Grid.RowSpan="2"/>
 
 
     </Grid>

@@ -111,6 +111,8 @@ namespace NumbersWarGame
             {
                 tb_NPCNumber.Text = NPC_NUM;
 
+                GameFinished(true, STEPS);
+
                 WriteGuessLn("");
                 WriteGuessLn($"You win! Number was {NPC_NUM}");
                 WriteGuessLn($"Steps taken {STEPS}");
@@ -148,6 +150,8 @@ namespace NumbersWarGame
         {
             tb_NPCNumber.Text = NPC_NUM;
 
+            GameFinished(false, STEPS);
+
             WriteGuessLn("");
             WriteGuessLn($"Oh no! Number was {NPC_NUM}");
             FreezeCommands();
@@ -155,6 +159,9 @@ namespace NumbersWarGame
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
+
+            GameFinished(false, STEPS);
+
             // Reset to initial state
             tb_NPCNumber.Text = "";
             tb_PlayerNumber.Text = "";

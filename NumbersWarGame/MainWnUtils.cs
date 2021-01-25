@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -92,7 +93,7 @@ namespace NumbersWarGame
             string RANDOM_NUM = null;
 
             int min = Convert.ToInt32(1 * (Math.Pow(10d, digits - 1)));    // 1* (10^x-1) - 1.  eg: 1*(10^4) = 10.000
-            int max = Convert.ToInt32((1 * (Math.Pow(10d, digits))) - 1); // 1* (10^x) - 1.  eg: 1*(10^5)-1 = 99.999
+            int max = Convert.ToInt32((1 * (Math.Pow(10d, digits))) - 1);  // 1* (10^x) - 1.  eg: 1*(10^5)-1 = 99.999
 
             Random rd = new Random();
 
@@ -109,6 +110,40 @@ namespace NumbersWarGame
             return RANDOM_NUM;
         }
 
+        private void GameFinished(bool Won, int Steps)
+        {//STAT_MostStepsTakenToWin
+            if (Won)
+            {
+                string _GamesWon = ConfigurationManager.AppSettings["STAT_GamesWon"];
+                int GamesWon = int.Parse(_GamesWon);
+
+                AddOrUpdateAppSettings("STAT_GamesWon", GamesWon++.ToString());
+            }
+
+            else
+            {
+                string _GamesLost = ConfigurationManager.AppSettings["STAT_GamesLost"];
+                int GamesLost = int.Parse(_GamesLost);
+
+                AddOrUpdateAppSettings("STAT_GamesWon", GamesLost++.ToString());
+            }
+
+            string _MostSteps = ConfigurationManager.AppSettings["STAT_MostStepsTakenToWin"];
+            int MostSteps = int.Parse(_MostSteps);
+
+            string _LessSteps = ConfigurationManager.AppSettings["STAT_LessStepsTakenToWin"];
+            int LessSteps = int.Parse(_LessSteps);
+
+            if (Steps > MostSteps)
+            {
+                AddOrUpdateAppSettings("STAT_MostStepsTakenToWin", Steps.ToString());
+            }
+
+            else if (Steps < LessSteps)
+            {
+                AddOrUpdateAppSettings("STAT_LessStepsTakenToWin", Steps.ToString());
+            }
+        }
 
         /// <summary>
         /// Freeze not needed buttons, unless you are debugging
@@ -164,6 +199,39 @@ namespace NumbersWarGame
 
                 paintSurface.Children.Add(line);
             }
+        }
+
+
+        internal static void AddOrUpdateAppSettings(string key, string value)
+        {
+            try
+            {
+#if DEBUG
+                string applicationName =
+                    Environment.GetCommandLineArgs()[0];
+#else
+           string applicationName =
+          Environment.GetCommandLineArgs()[0]+ ".exe";
+#endif
+
+                string exePath = System.IO.Path.Combine(Environment.CurrentDirectory, applicationName);
+
+                var configFile = ConfigurationManager.OpenExeConfiguration(exePath);
+                var settings = configFile.AppSettings.Settings;
+
+                if (settings[key] == null)
+                {
+                    settings.Add(key, value);
+                }
+                else
+                {
+                    settings[key].Value = value;
+                }
+                configFile.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+            }
+            catch (ConfigurationErrorsException)
+            { }
         }
     }
 }
