@@ -35,12 +35,12 @@ namespace NumbersWarGame
         /// <summary>
         /// Check if number is valid for the game
         /// </summary>
-        private bool RunNumberChecks(string NUMBER, bool messages)
+        private bool RunNumberChecks(string NUMBER, bool ShowExceptions)
         {
             // First check if first digit is 0
             if (NUMBER.First().ToString() == "0")
             {
-                if (messages) WriteLn("Your number cannot begin with a 0");
+                if (ShowExceptions) WriteLn("Your number cannot begin with a 0");
                 return false;
             }
 
@@ -49,7 +49,7 @@ namespace NumbersWarGame
             {
                 if (!Char.IsDigit(NUMBER[i]))
                 {
-                    if (messages) WriteLn("All characters must be digits");
+                    if (ShowExceptions) WriteLn("All characters must be digits");
                     return false;
                 }
             }
@@ -61,7 +61,7 @@ namespace NumbersWarGame
 
                 if (freq > 1)
                 {
-                    if (messages) WriteLn("You can only use a digit once");
+                    if (ShowExceptions) WriteLn("You can only use a digit once");
                     return false;
                 }
             }
@@ -110,6 +110,39 @@ namespace NumbersWarGame
             return RANDOM_NUM;
         }
 
+        /// <summary>
+        /// Provides the answer to the number guessed, needs two out variables to store the answers
+        /// </summary>
+        private void AnswerToNumber(string Number, out int GoodAmmount, out int RegularAmmount)
+        {
+            GoodAmmount = 0;
+            RegularAmmount = 0;
+
+            // First check good numbers. Check player index num against same index on npc
+            for (int i = 0; i < Number.Length; i++)
+            {
+                if (Enemy.ChosenNumber[i] == Number[i])
+                {
+                    GoodAmmount++;
+                }
+            }
+
+            // Then check regular numbers. Check each index agains all indexes of NPC_NUM
+            for (int i = 0; i < Number.Length; i++)
+            {
+                for (int n = 0; n < Number.Length; n++)
+                {
+                    // If it's a different index (that'd be a good number) and it's the
+                    // same number then increment a regular
+                    if (i != n && Enemy.ChosenNumber[i] == Number[n])
+                    {
+                        RegularAmmount++;
+                    }
+
+                }
+            }
+        }
+
         private void GameFinished(bool Won, int Steps)
         {//STAT_MostStepsTakenToWin
             if (Won)
@@ -153,7 +186,9 @@ namespace NumbersWarGame
             STEPS = 0;
             string Asterix = "";
 
-            foreach (char ch in NPC_NUM)
+            Enemy = new EnemyAI(PLAYER_NUM);
+
+            foreach (char ch in Enemy.ChosenNumber)
             {
                 Asterix = Asterix + "* ";
             }
@@ -172,7 +207,7 @@ namespace NumbersWarGame
 
 #if DEBUG
             b_ConfirmPlayer.IsEnabled = true;
-            tb_NPCNumber.Text = NPC_NUM;
+            tb_NPCNumber.Text = Enemy.ChosenNumber;
 #endif
         }
 

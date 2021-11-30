@@ -59,6 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="EnemyAI.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="Other\Difficulty.xaml.cs">
       <DependentUpon>Difficulty.xaml</DependentUpon>

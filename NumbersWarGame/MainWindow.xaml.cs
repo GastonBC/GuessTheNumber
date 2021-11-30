@@ -5,29 +5,15 @@ using System.Windows;
 using System.Windows.Controls;
 
 /*
- TODO: Make a drawing pane?
+ TODO: 
         simplify main window, it's weird and slow and ugly now
         clean canvas button
-        make line bordeaux and thicker
         organize window with stacked panels
         add stats: won games, failed games, steps record, steps average
         save game state on closure
  */
 
-/*
-    NPC thinking > it has a list of 0 to 9. Takes the ammounts of digits needed to create a
-    valid number and tries it against yours.
 
-    special cases (on a 4 digit number)
-    0G - 0R removes all digits on those numbers and tries (x+y = 0)
-    again.
-    0G - 4R keep trying those numbers with different order
-    xG - yR if x + y = 4, those are all the numbers you need, keep trying with those
-
-
-    Then how to process good and regular numbers?
-
- */
 
 namespace NumbersWarGame
 {
@@ -35,9 +21,10 @@ namespace NumbersWarGame
     {
         Point currentPoint = new Point();
 
-        string NPC_NUM;
         string PLAYER_NUM;
         int STEPS;
+        EnemyAI Enemy;
+        Difficulty DiffWn;
 
         public MainWindow()
         {
@@ -45,80 +32,66 @@ namespace NumbersWarGame
         }
 
 
-        private void onPlayerTextChange(object sender, TextChangedEventArgs e)
-        {
-            if (tb_PlayerNumber.Text.Length >= 2 && tb_PlayerNumber.Text.Length <= 10)
-            {
-                b_ConfirmPlayer.IsEnabled = true;
-            }
-            else
-            {
-                b_ConfirmPlayer.IsEnabled = false;
-            }
-        }
-
-        private void onGuessTextChange(object sender, TextChangedEventArgs e)
-        {
-            if (tb_NumberTry.Text.Length == NPC_NUM.Length)
-            {
-                b_Guess.IsEnabled = true;
-            }
-            else
-            {
-                b_Guess.IsEnabled = false;
-            }
-        }
-
         private void Guess_Click(object sender, RoutedEventArgs e)
         {
             string GUESS_NUM = tb_NumberTry.Text;
 
+            // Check if its a valid number
             if (GUESS_NUM == "" || RunNumberChecks(GUESS_NUM, true) == false) return;
 
-            int GoodAmmount = 0;
-            int RegularAmmount = 0;
-
-
-            // First check good numbers. Check player index num against same index on npc
-            for (int i = 0; i < GUESS_NUM.Length; i++)
-            {
-                if (NPC_NUM[i] == GUESS_NUM[i])
-                {
-                    GoodAmmount++;
-                }
-            }
-
-            // Then check regular numbers. Check each index agains all indexes of NPC_NUM
-            for (int i = 0; i < GUESS_NUM.Length; i++)
-            {
-                for (int n = 0; n < GUESS_NUM.Length; n++)
-                {
-                    // If it's a different index (that'd be a good number) and it's the
-                    // same number then increment a regular
-                    if (i != n && NPC_NUM[i] == GUESS_NUM[n])
-                    {
-                        RegularAmmount++;
-                    }
-
-                }
-            }
+            int GoodAmmount;
+            int RegularAmmount;
+            AnswerToNumber(GUESS_NUM, out GoodAmmount, out RegularAmmount);
 
             WriteGuessLn(tb_NumberTry.Text + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
             STEPS++;
 
             // Win condition
-            if (GoodAmmount == NPC_NUM.Length)
+            if (GoodAmmount == Enemy.ChosenNumber.Length)
             {
-                tb_NPCNumber.Text = NPC_NUM;
+                tb_NPCNumber.Text = Enemy.ChosenNumber;
 
                 GameFinished(true, STEPS);
 
                 WriteGuessLn("");
-                WriteGuessLn($"You win! Number was {NPC_NUM}");
+                WriteGuessLn($"You win! Number was {Enemy.ChosenNumber}");
                 WriteGuessLn($"Steps taken {STEPS}");
                 FreezeCommands();
                 return;
             }
+
+            EnemyTurn();
+        }
+
+        
+
+        private void EnemyTurn()
+        {
+            string EnemyGuess = Enemy.MakeGuess();
+
+            int GoodAmmount;
+            int RegularAmmount;
+            AnswerToNumber(EnemyGuess, out GoodAmmount, out RegularAmmount);
+
+            WriteLn("Enemy turn!");
+            WriteLn(EnemyGuess + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
+
+            // Win condition
+            if (GoodAmmount == Enemy.ChosenNumber.Length)
+            {
+                tb_NPCNumber.Text = Enemy.ChosenNumber;
+
+                GameFinished(true, STEPS);
+
+                WriteLn("");
+                WriteLn($"Foe wins! Number was {EnemyGuess}");
+                WriteLn($"Steps taken {STEPS}");
+                FreezeCommands();
+                return;
+            }
+
+            Enemy.Think(EnemyGuess, GoodAmmount, RegularAmmount);
+
         }
 
         private void ConfirmNum_Click(object sender, RoutedEventArgs e)
@@ -130,11 +103,6 @@ namespace NumbersWarGame
             {
                 return;
             }
-
-            NPC_NUM = GetValidNumber(PLAYER_NUM.Length);
-            while (PLAYER_NUM == NPC_NUM)
-                NPC_NUM = GetValidNumber(PLAYER_NUM.Length);
-
             SessionStart();
 
         }
@@ -145,15 +113,14 @@ namespace NumbersWarGame
             HelpWn.Show();
         }
 
-
         private void GiveUp_Click(object sender, RoutedEventArgs e)
         {
-            tb_NPCNumber.Text = NPC_NUM;
+            tb_NPCNumber.Text = Enemy.ChosenNumber;
 
             GameFinished(false, STEPS);
 
             WriteGuessLn("");
-            WriteGuessLn($"Oh no! Number was {NPC_NUM}");
+            WriteGuessLn($"Oh no! Number was {Enemy.ChosenNumber}");
             FreezeCommands();
         }
 
@@ -179,9 +146,33 @@ namespace NumbersWarGame
             paintSurface.Children.Clear();
         }
 
+        private void onPlayerTextChange(object sender, TextChangedEventArgs e)
+        {
+            if (tb_PlayerNumber.Text.Length >= 2 && tb_PlayerNumber.Text.Length <= 10)
+            {
+                b_ConfirmPlayer.IsEnabled = true;
+            }
+            else
+            {
+                b_ConfirmPlayer.IsEnabled = false;
+            }
+        }
+
+        private void onGuessTextChange(object sender, TextChangedEventArgs e)
+        {
+            if (tb_NumberTry.Text.Length == Enemy.ChosenNumber.Length)
+            {
+                b_Guess.IsEnabled = true;
+            }
+            else
+            {
+                b_Guess.IsEnabled = false;
+            }
+        }
+
         private void RandomDiff_Click(object sender, RoutedEventArgs e)
         {
-            Difficulty DiffWn = new Difficulty();
+            DiffWn = new Difficulty();
             DiffWn.ShowDialog();
 
             // Nothing chosen, nothing happens
@@ -206,13 +197,6 @@ namespace NumbersWarGame
             }
 
             PLAYER_NUM = GetValidNumber(digits);
-            NPC_NUM = GetValidNumber(digits);
-
-            // Numbers will be the same, so try again until it's different
-            // it's pseudo random
-            while (PLAYER_NUM == NPC_NUM)
-                NPC_NUM = GetValidNumber(digits);
-
 
             SessionStart();
         }
