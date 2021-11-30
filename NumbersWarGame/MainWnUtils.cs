@@ -113,28 +113,28 @@ namespace NumbersWarGame
         /// <summary>
         /// Provides the answer to the number guessed, needs two out variables to store the answers
         /// </summary>
-        private void AnswerToNumber(string Number, out int GoodAmmount, out int RegularAmmount)
+        private void AnswerToNumber(string NumberGuessed, string NumberToCheckAgainst, out int GoodAmmount, out int RegularAmmount)
         {
             GoodAmmount = 0;
             RegularAmmount = 0;
 
             // First check good numbers. Check player index num against same index on npc
-            for (int i = 0; i < Number.Length; i++)
+            for (int i = 0; i < NumberGuessed.Length; i++)
             {
-                if (Enemy.ChosenNumber[i] == Number[i])
+                if (NumberGuessed[i] == NumberToCheckAgainst[i])
                 {
                     GoodAmmount++;
                 }
             }
 
             // Then check regular numbers. Check each index agains all indexes of NPC_NUM
-            for (int i = 0; i < Number.Length; i++)
+            for (int i = 0; i < NumberGuessed.Length; i++)
             {
-                for (int n = 0; n < Number.Length; n++)
+                for (int n = 0; n < NumberGuessed.Length; n++)
                 {
                     // If it's a different index (that'd be a good number) and it's the
                     // same number then increment a regular
-                    if (i != n && Enemy.ChosenNumber[i] == Number[n])
+                    if (i != n && NumberGuessed[i] == NumberToCheckAgainst[n])
                     {
                         RegularAmmount++;
                     }

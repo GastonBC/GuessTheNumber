@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace NumbersWarGame
@@ -11,16 +12,25 @@ namespace NumbersWarGame
         public Level? Difficulty { get; set; }
         public List<char> PossibleNumbers { get; set; }
         public List<string> OldGuesses { get; set; }
+        public List<List<char>> MustNotBe { get; set; }
         public string ChosenNumber { get; }
         internal string NextGuess { get; set; }
 
         public EnemyAI(string PlayerNumber)
         {
-            NextGuess = null;
-            ChosenNumber = GetValidNumber(PlayerNumber.Length);
-
             PossibleNumbers = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
             OldGuesses = new List<string>();
+            MustNotBe = new List<List<char>>();
+
+            // Initialize empty nested lists or it gives an error on MakeGuess()
+            foreach (char ch in PlayerNumber.ToString())
+            {
+                List<char> CharLst = new List<char>();
+                MustNotBe.Add(CharLst);
+            }
+
+            ChosenNumber = GetValidNumber(PlayerNumber.Length);
+            NextGuess = null;
         }
 
         public string MakeGuess()
@@ -28,13 +38,40 @@ namespace NumbersWarGame
             string Guess = "";
             bool IsGuessPossibleWin = false;
 
-            while (!IsGuessPossibleWin || OldGuesses.Contains(Guess))
+            // While it's NOT a possible win
+            while (!IsGuessPossibleWin)
             {
+                // This number will have to pass certain conditions
+                // If all of them are passed, then IsGuessPossibleWin is true
                 Guess = GetValidNumber(ChosenNumber.Length);
 
                 // Check if every char in guess is in PossibleNumbers. Because the list will shrink
                 // with each guess
-                IsGuessPossibleWin = Guess.Intersect(PossibleNumbers).Count() == Guess.Count();
+                if (Guess.Intersect(PossibleNumbers).Count() != Guess.Count())
+                { continue; }
+
+                // OldGuesses must NOT contain the new guess
+                if (OldGuesses.Contains(Guess))
+                { continue; }
+
+                // Check Guess indexes to must not bees
+                bool SkipFlag = false;
+                foreach (char ch in Guess)
+                {
+                    int idx = Guess.IndexOf(ch);
+
+                    if (!IsCharacterValidAtIdx(ch, idx))
+                    {
+                        SkipFlag = true;
+                        break;
+                    }
+                }
+                if (SkipFlag)
+                { continue; }
+
+
+                IsGuessPossibleWin = true;
+
             }
 
             OldGuesses.Add(Guess);
@@ -68,43 +105,45 @@ namespace NumbersWarGame
                         PossibleNumbers.Remove(ch);
                     }
                 }
+
+                if (RegularAmmount == ChosenNumber.Length)
+                {
+                    foreach (char ch in LastGuess)
+                    {
+                        int idx = LastGuess.IndexOf(ch);
+
+                        MustNotBe[idx].Add(ch);
+                    }
+                }
             }
 
-            // 4 Regulars means all of the numbers need to change position
+            /* List different strategies
+             * 
+             * Try completely different sets of numbers each time
+             * 
+             * If a guess had 2 R or G and another completely different another 2 then keep
+             * trying those 8 numbers only
+             * 
+             * Try common numbers? Is that a thing?
+             * 
+             * After that it's basically reading through the history and learning but howww
+             */
 
-            /* should make a variable for each index, check if that index is 
-             * definetly not x number
-            */
             return "";
         }
 
-
-        private bool RunNumberChecks(string NUMBER)
-        {
-            // First check if first digit is 0
-            if (NUMBER.First().ToString() == "0")
+        private bool IsCharacterValidAtIdx(char ch, int idx)
+        { 
+            // No zeroes at the beginning of string
+            if (ch == '0' && idx == 0)
             {
                 return false;
             }
 
-            // And if all chars are numbers
-            for (int i = 0; i < NUMBER.Length; i++)
+            // Must not be list changes with guesses
+            if (MustNotBe[idx].Contains(ch))
             {
-                if (!Char.IsDigit(NUMBER[i]))
-                {
-                    return false;
-                }
-            }
-
-            // And if a number is repeated
-            foreach (char ch in NUMBER)
-            {
-                int freq = NUMBER.Count(f => (f == ch));
-
-                if (freq > 1)
-                {
-                    return false;
-                }
+                return false;
             }
 
             return true;
@@ -112,23 +151,46 @@ namespace NumbersWarGame
 
         private string GetValidNumber(int digits)
         {
-            string RANDOM_NUM = null;
-
-            int min = Convert.ToInt32(1 * (Math.Pow(10d, digits - 1)));    // 1* (10^x-1) - 1.  eg: 1*(10^4) = 10.000
-            int max = Convert.ToInt32((1 * (Math.Pow(10d, digits))) - 1);  // 1* (10^x) - 1.  eg: 1*(10^5)-1 = 99.999
+            string RANDOM_NUM = "";
 
             Random rd = new Random();
 
-            bool isNumberWrong = true;
-
-            while (isNumberWrong)
+            for (int i = 0; i < digits; i++)
             {
-                RANDOM_NUM = rd.Next(min, max).ToString();
-                if (RunNumberChecks(RANDOM_NUM))
+                // Choose random number from POSSIBLE nums
+                int idx = rd.Next(PossibleNumbers.Count);
+
+                bool IsCharValid = false;
+                // If all conditions are met then is valid, exit while
+                while (!IsCharValid)
                 {
-                    isNumberWrong = false;
+                    idx = rd.Next(PossibleNumbers.Count);
+
+                    // Check MustNotBees
+                    if (!IsCharacterValidAtIdx(PossibleNumbers[idx], i))
+                    { continue; }
+
+                    // Check if the character repeats
+                    bool SkipFlag = false;
+                    foreach (char NUM_ch in RANDOM_NUM)
+                    {
+                        if (NUM_ch == PossibleNumbers[idx])
+                        {
+                            SkipFlag = true;
+                            break;
+                        }
+                    }
+                    if (SkipFlag == true)
+                    { continue; }
+
+                    IsCharValid = true;
+
+
                 }
+
+                RANDOM_NUM = RANDOM_NUM + PossibleNumbers[idx];
             }
+
             return RANDOM_NUM;
         }
     }

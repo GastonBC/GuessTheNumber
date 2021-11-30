@@ -41,7 +41,7 @@ namespace NumbersWarGame
 
             int GoodAmmount;
             int RegularAmmount;
-            AnswerToNumber(GUESS_NUM, out GoodAmmount, out RegularAmmount);
+            AnswerToNumber(GUESS_NUM, Enemy.ChosenNumber, out GoodAmmount, out RegularAmmount);
 
             WriteGuessLn(tb_NumberTry.Text + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
             STEPS++;
@@ -71,7 +71,7 @@ namespace NumbersWarGame
 
             int GoodAmmount;
             int RegularAmmount;
-            AnswerToNumber(EnemyGuess, out GoodAmmount, out RegularAmmount);
+            AnswerToNumber(EnemyGuess, PLAYER_NUM, out GoodAmmount, out RegularAmmount);
 
             WriteLn("Enemy turn!");
             WriteLn(EnemyGuess + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
@@ -103,6 +103,7 @@ namespace NumbersWarGame
             {
                 return;
             }
+
             SessionStart();
 
         }
