@@ -2,6 +2,8 @@
 
 ![SolvedGame](https://github.com/GastonBC/NumbersWarGame/blob/main/Images/SolvedGame.png)
 
+Also known as **Mastermind** and **Bulls and Cows**
+
 How to play:
 
 · You need to guess the other player's number. On your turn write a number and the opponent will tell you how many Good digits and how many Regular digits you have.
