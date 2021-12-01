@@ -207,7 +207,7 @@ namespace NumbersWarGame
                     Steps++;
                 }
 
-                TotalSteps = TotalSteps + Steps;
+                TotalSteps += Steps;
 
                 Debug.WriteLine($"{i} - Steps: {Steps}");
                 

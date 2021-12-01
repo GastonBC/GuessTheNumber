@@ -126,7 +126,7 @@ namespace NumbersWarGame
 
             foreach (char ch in Enemy.Code)
             {
-                Asterix = Asterix + "* ";
+                Asterix += "* ";
             }
 
 
@@ -157,14 +157,15 @@ namespace NumbersWarGame
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                Line line = new Line();
-
-                line.Stroke = new SolidColorBrush(Colors.DarkRed);
-                line.StrokeThickness = 3;
-                line.X1 = currentPoint.X;
-                line.Y1 = currentPoint.Y;
-                line.X2 = e.GetPosition(paintSurface).X;
-                line.Y2 = e.GetPosition(paintSurface).Y;
+                Line line = new Line
+                {
+                    Stroke = new SolidColorBrush(Colors.DarkRed),
+                    StrokeThickness = 3,
+                    X1 = currentPoint.X,
+                    Y1 = currentPoint.Y,
+                    X2 = e.GetPosition(paintSurface).X,
+                    Y2 = e.GetPosition(paintSurface).Y
+                };
 
                 currentPoint = e.GetPosition(paintSurface);
 
