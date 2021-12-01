@@ -1,5 +1,6 @@
 ﻿using NumbersWarGame;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,14 @@ namespace NumberWarsGameCs
             int GamesToPlay = 10000;
             int Digits = 4;
             double TotalSteps = 0;
+
+            Console.WriteLine($"Games to play: {GamesToPlay}");
+            Console.WriteLine($"Digits: {Digits}");
+            Console.WriteLine($"Press enter when ready");
+            Console.ReadLine();
+
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
 
             for (int i = 0; i <= GamesToPlay; i++)
             {
@@ -50,7 +59,12 @@ namespace NumberWarsGameCs
 
             }
 
+            stopWatch.Stop();
+            // Get the elapsed time as a TimeSpan value.
+            TimeSpan ts = stopWatch.Elapsed;
+
             Console.WriteLine($"Average: {TotalSteps / GamesToPlay}");
+            Console.WriteLine($"Time elapsed: {ts}");
         }
     }
 }
