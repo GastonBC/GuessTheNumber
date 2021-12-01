@@ -37,14 +37,7 @@ namespace NumbersWarGame
         /// </summary>
         private bool RunNumberChecks(string NUMBER, bool ShowExceptions)
         {
-            // First check if first digit is 0
-            if (NUMBER.First().ToString() == "0")
-            {
-                if (ShowExceptions) WriteLn("Your number cannot begin with a 0");
-                return false;
-            }
-
-            // And if all chars are numbers
+            // Check if all chars are numbers
             for (int i = 0; i < NUMBER.Length; i++)
             {
                 if (!Char.IsDigit(NUMBER[i]))
@@ -181,14 +174,14 @@ namespace NumbersWarGame
         /// <summary>
         /// Freeze not needed buttons, unless you are debugging
         /// </summary>
-        private void SessionStart()
+        private void SessionStart(int Digits)
         {
             STEPS = 0;
             string Asterix = "";
 
-            Enemy = new EnemyAI(PLAYER_NUM);
+            Enemy = new EnemyAI(Digits);
 
-            foreach (char ch in Enemy.ChosenNumber)
+            foreach (char ch in Enemy.Code)
             {
                 Asterix = Asterix + "* ";
             }
@@ -207,7 +200,7 @@ namespace NumbersWarGame
 
 #if DEBUG
             b_ConfirmPlayer.IsEnabled = true;
-            tb_NPCNumber.Text = Enemy.ChosenNumber;
+            tb_NPCNumber.Text = Enemy.Code;
 #endif
         }
 

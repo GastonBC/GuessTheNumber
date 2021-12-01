@@ -10,68 +10,35 @@ namespace NumbersWarGame
     class EnemyAI
     {
         public Level? Difficulty { get; set; }
-        public List<char> PossibleNumbers { get; set; }
+        public List<string> PossiblePermutations { get; set; }
         public List<string> OldGuesses { get; set; }
-        public List<List<char>> MustNotBe { get; set; }
-        public string ChosenNumber { get; }
+        public string Code { get; }
         internal string NextGuess { get; set; }
 
-        public EnemyAI(string PlayerNumber)
+        public EnemyAI(int Digits)
         {
-            PossibleNumbers = new List<char> { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-            OldGuesses = new List<string>();
-            MustNotBe = new List<List<char>>();
+            IEnumerable<IEnumerable<char>> CharPerms = GetPermutations("0123456789", Digits);
+            PossiblePermutations = new List<string>();
 
-            // Initialize empty nested lists or it gives an error on MakeGuess()
-            foreach (char ch in PlayerNumber.ToString())
+            // Populate all possible guesses
+            foreach (IEnumerable<char> CodesInChar in CharPerms)
             {
-                List<char> CharLst = new List<char>();
-                MustNotBe.Add(CharLst);
+                string CodeAsString = new string(CodesInChar.ToArray());
+
+                PossiblePermutations.Add(CodeAsString);
             }
 
-            ChosenNumber = GetValidNumber(PlayerNumber.Length);
-            NextGuess = null;
+            OldGuesses = new List<string>();
+            Code = GetValidNumber(PossiblePermutations);
         }
 
         public string MakeGuess()
         {
-            string Guess = "";
-            bool IsGuessPossibleWin = false;
+            string Guess = GetValidNumber(PossiblePermutations);
 
-            // While it's NOT a possible win
-            while (!IsGuessPossibleWin)
+            while (OldGuesses.Contains(Guess))
             {
-                // This number will have to pass certain conditions
-                // If all of them are passed, then IsGuessPossibleWin is true
-                Guess = GetValidNumber(ChosenNumber.Length);
-
-                // Check if every char in guess is in PossibleNumbers. Because the list will shrink
-                // with each guess
-                if (Guess.Intersect(PossibleNumbers).Count() != Guess.Count())
-                { continue; }
-
-                // OldGuesses must NOT contain the new guess
-                if (OldGuesses.Contains(Guess))
-                { continue; }
-
-                // Check Guess indexes to must not bees
-                bool SkipFlag = false;
-                foreach (char ch in Guess)
-                {
-                    int idx = Guess.IndexOf(ch);
-
-                    if (!IsCharacterValidAtIdx(ch, idx))
-                    {
-                        SkipFlag = true;
-                        break;
-                    }
-                }
-                if (SkipFlag)
-                { continue; }
-
-
-                IsGuessPossibleWin = true;
-
+                Guess = GetValidNumber(PossiblePermutations);
             }
 
             OldGuesses.Add(Guess);
@@ -84,114 +51,69 @@ namespace NumbersWarGame
         /// </summary>
         public string Think(string LastGuess, int GoodAmmount, int RegularAmmount )
         {
-            // answer = 0G, 0R, discard numbers
-            if (GoodAmmount == 0 && RegularAmmount == 0)
+            foreach(string Possibilities in new List<string>(PossiblePermutations))
             {
-                foreach (char ch in LastGuess)
+                int Good;
+                int Regular;
+                AnswerToNumber(LastGuess, Possibilities, out Good, out Regular);
+
+                if (GoodAmmount != Good || RegularAmmount != Regular)
                 {
-                    PossibleNumbers.Remove(ch);
+                    PossiblePermutations.Remove(Possibilities);
                 }
             }
+            
 
-            // answer is correct but in a different order. Remove the rest of the numbers from 
-            // the possible list
-            else if (GoodAmmount + RegularAmmount == ChosenNumber.Length)
-            {
-                List<char> TmpLst = new List<char>(PossibleNumbers);
-                foreach (char ch in TmpLst)
-                {
-                    if (!LastGuess.Contains(ch))
-                    {
-                        PossibleNumbers.Remove(ch);
-                    }
-                }
-
-                if (RegularAmmount == ChosenNumber.Length)
-                {
-                    foreach (char ch in LastGuess)
-                    {
-                        int idx = LastGuess.IndexOf(ch);
-
-                        MustNotBe[idx].Add(ch);
-                    }
-                }
-            }
-
-            /* List different strategies
-             * 
-             * Try completely different sets of numbers each time
-             * 
-             * If a guess had 2 R or G and another completely different another 2 then keep
-             * trying those 8 numbers only
-             * 
-             * Try common numbers? Is that a thing?
-             * 
-             * After that it's basically reading through the history and learning but howww
-             */
 
             return "";
         }
 
-        private bool IsCharacterValidAtIdx(char ch, int idx)
-        { 
-            // No zeroes at the beginning of string
-            if (ch == '0' && idx == 0)
-            {
-                return false;
-            }
+        private string GetValidNumber(List<string> PossibleGuesses)
+        {
+            Random rd = new Random();
+            int idx = rd.Next(PossiblePermutations.Count());
 
-            // Must not be list changes with guesses
-            if (MustNotBe[idx].Contains(ch))
-            {
-                return false;
-            }
-
-            return true;
+            return PossibleGuesses[idx];
         }
 
-        private string GetValidNumber(int digits)
+        private void AnswerToNumber(string Guess, string Code, out int GoodAmmount, out int RegularAmmount)
         {
-            string RANDOM_NUM = "";
+            GoodAmmount = 0;
+            RegularAmmount = 0;
 
-            Random rd = new Random();
-
-            for (int i = 0; i < digits; i++)
+            // First check good numbers. Check player index num against same index on npc
+            for (int i = 0; i < Guess.Length; i++)
             {
-                // Choose random number from POSSIBLE nums
-                int idx = rd.Next(PossibleNumbers.Count);
-
-                bool IsCharValid = false;
-                // If all conditions are met then is valid, exit while
-                while (!IsCharValid)
+                if (Guess[i] == Code[i])
                 {
-                    idx = rd.Next(PossibleNumbers.Count);
-
-                    // Check MustNotBees
-                    if (!IsCharacterValidAtIdx(PossibleNumbers[idx], i))
-                    { continue; }
-
-                    // Check if the character repeats
-                    bool SkipFlag = false;
-                    foreach (char NUM_ch in RANDOM_NUM)
-                    {
-                        if (NUM_ch == PossibleNumbers[idx])
-                        {
-                            SkipFlag = true;
-                            break;
-                        }
-                    }
-                    if (SkipFlag == true)
-                    { continue; }
-
-                    IsCharValid = true;
-
-
+                    GoodAmmount++;
                 }
-
-                RANDOM_NUM = RANDOM_NUM + PossibleNumbers[idx];
             }
 
-            return RANDOM_NUM;
+            // Then check regular numbers. Check each index agains all indexes of NPC_NUM
+            for (int i = 0; i < Guess.Length; i++)
+            {
+                for (int n = 0; n < Guess.Length; n++)
+                {
+                    // If it's a different index (that'd be a good number) and it's the
+                    // same number then increment a regular
+                    if (i != n && Guess[i] == Code[n])
+                    {
+                        RegularAmmount++;
+                    }
+
+                }
+            }
+        }
+
+
+        static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> list, int length)
+        {
+            if (length == 1) return list.Select(t => new T[] { t });
+
+            return GetPermutations(list, length - 1)
+                .SelectMany(t => list.Where(e => !t.Contains(e)),
+                    (t1, t2) => t1.Concat(new T[] { t2 }));
         }
     }
 }

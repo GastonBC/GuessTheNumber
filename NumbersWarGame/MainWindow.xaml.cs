@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,31 +42,31 @@ namespace NumbersWarGame
 
             int GoodAmmount;
             int RegularAmmount;
-            AnswerToNumber(GUESS_NUM, Enemy.ChosenNumber, out GoodAmmount, out RegularAmmount);
+            AnswerToNumber(GUESS_NUM, Enemy.Code, out GoodAmmount, out RegularAmmount);
 
             WriteGuessLn(tb_NumberTry.Text + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
             STEPS++;
 
             // Win condition
-            if (GoodAmmount == Enemy.ChosenNumber.Length)
+            if (GoodAmmount == Enemy.Code.Length)
             {
-                tb_NPCNumber.Text = Enemy.ChosenNumber;
+                tb_NPCNumber.Text = Enemy.Code;
 
                 GameFinished(true, STEPS);
 
                 WriteGuessLn("");
-                WriteGuessLn($"You win! Number was {Enemy.ChosenNumber}");
+                WriteGuessLn($"You win! Number was {Enemy.Code}");
                 WriteGuessLn($"Steps taken {STEPS}");
                 FreezeCommands();
                 return;
             }
 
-            EnemyTurn();
+            EnemyTurn(Enemy);
         }
 
         
 
-        private void EnemyTurn()
+        private void EnemyTurn(EnemyAI Enemy)
         {
             string EnemyGuess = Enemy.MakeGuess();
 
@@ -77,9 +78,9 @@ namespace NumbersWarGame
             WriteLn(EnemyGuess + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
 
             // Win condition
-            if (GoodAmmount == Enemy.ChosenNumber.Length)
+            if (GoodAmmount == Enemy.Code.Length)
             {
-                tb_NPCNumber.Text = Enemy.ChosenNumber;
+                tb_NPCNumber.Text = Enemy.Code;
 
                 GameFinished(true, STEPS);
 
@@ -104,7 +105,7 @@ namespace NumbersWarGame
                 return;
             }
 
-            SessionStart();
+            SessionStart(PLAYER_NUM.Length);
 
         }
 
@@ -116,12 +117,12 @@ namespace NumbersWarGame
 
         private void GiveUp_Click(object sender, RoutedEventArgs e)
         {
-            tb_NPCNumber.Text = Enemy.ChosenNumber;
+            tb_NPCNumber.Text = Enemy.Code;
 
             GameFinished(false, STEPS);
 
             WriteGuessLn("");
-            WriteGuessLn($"Oh no! Number was {Enemy.ChosenNumber}");
+            WriteGuessLn($"Oh no! Number was {Enemy.Code}");
             FreezeCommands();
         }
 
@@ -161,7 +162,7 @@ namespace NumbersWarGame
 
         private void onGuessTextChange(object sender, TextChangedEventArgs e)
         {
-            if (tb_NumberTry.Text.Length == Enemy.ChosenNumber.Length)
+            if (tb_NumberTry.Text.Length == Enemy.Code.Length)
             {
                 b_Guess.IsEnabled = true;
             }
@@ -173,6 +174,48 @@ namespace NumbersWarGame
 
         private void RandomDiff_Click(object sender, RoutedEventArgs e)
         {
+            // Now using this button to make the average win rate
+
+            int GamesToPlay = 10000;
+            int Digits = 4;
+            double TotalSteps = 0;
+
+            for (int i = 0; i <= GamesToPlay; i++)
+            {
+
+                // TODO: Make GetValidNumber more efficient
+                string NPC1Code = GetValidNumber(Digits);
+                EnemyAI NPC2 = new EnemyAI(Digits);
+
+                int Steps = 1;
+                
+
+                int Good = 0;
+                int Regular = 0;
+                string Guess = NPC2.MakeGuess();
+                AnswerToNumber(Guess, NPC1Code, out Good, out Regular);
+
+                NPC2.Think(Guess, Good, Regular);
+
+                while (Good != 4)
+                {
+                    Guess = NPC2.MakeGuess();
+                    AnswerToNumber(Guess, NPC1Code, out Good, out Regular);
+                    NPC2.Think(Guess, Good, Regular);
+
+                    Steps++;
+                }
+
+                TotalSteps = TotalSteps + Steps;
+
+                Debug.WriteLine($"{i} - Steps: {Steps}");
+                
+            }
+
+            WriteLn($"Average: {TotalSteps / GamesToPlay}");
+
+
+            return;
             DiffWn = new Difficulty();
             DiffWn.ShowDialog();
 
@@ -199,7 +242,7 @@ namespace NumbersWarGame
 
             PLAYER_NUM = GetValidNumber(digits);
 
-            SessionStart();
+            SessionStart(PLAYER_NUM.Length);
         }
     }
 }
