@@ -22,9 +22,9 @@ namespace NumbersWarGame
     {
         Point currentPoint = new Point();
 
-        string PLAYER_NUM;
+        string PlayerCode;
         int STEPS;
-        EnemyAI Enemy;
+        Enemy Enemy;
         Difficulty DiffWn;
 
         public MainWindow()
@@ -35,20 +35,20 @@ namespace NumbersWarGame
 
         private void Guess_Click(object sender, RoutedEventArgs e)
         {
-            string GUESS_NUM = tb_NumberTry.Text;
+            string PlayerGuess = tb_NumberTry.Text;
 
             // Check if its a valid number
-            if (GUESS_NUM == "" || RunNumberChecks(GUESS_NUM, true) == false) return;
+            if (PlayerGuess == "" || RunNumberChecks(PlayerGuess, true) == false) return;
 
             int GoodAmmount;
             int RegularAmmount;
-            AnswerToNumber(GUESS_NUM, Enemy.Code, out GoodAmmount, out RegularAmmount);
+            Utils.AnswerToNumber(PlayerGuess, Enemy.Code, out GoodAmmount, out RegularAmmount);
 
             WriteGuessLn(tb_NumberTry.Text + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
             STEPS++;
 
             // Win condition
-            if (GoodAmmount == Enemy.Code.Length)
+            if (PlayerGuess == Enemy.Code)
             {
                 tb_NPCNumber.Text = Enemy.Code;
 
@@ -66,46 +66,46 @@ namespace NumbersWarGame
 
         
 
-        private void EnemyTurn(EnemyAI Enemy)
+        private void EnemyTurn(Enemy NPC)
         {
-            string EnemyGuess = Enemy.MakeGuess();
+            WriteLn("Enemy turn!");
+
+            NPC.MakeGuess();
 
             int GoodAmmount;
             int RegularAmmount;
-            AnswerToNumber(EnemyGuess, PLAYER_NUM, out GoodAmmount, out RegularAmmount);
+            Utils.AnswerToNumber(NPC.LastGuess, PlayerCode, out GoodAmmount, out RegularAmmount);
 
-            WriteLn("Enemy turn!");
-            WriteLn(EnemyGuess + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
+            WriteLn(NPC.LastGuess + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
 
             // Win condition
-            if (GoodAmmount == Enemy.Code.Length)
+            if (PlayerCode == NPC.LastGuess)
             {
-                tb_NPCNumber.Text = Enemy.Code;
+                tb_NPCNumber.Text = NPC.Code;
 
                 GameFinished(true, STEPS);
 
                 WriteLn("");
-                WriteLn($"Foe wins! Number was {EnemyGuess}");
+                WriteLn($"Foe wins! Number was {NPC.LastGuess}");
                 WriteLn($"Steps taken {STEPS}");
                 FreezeCommands();
                 return;
             }
 
-            Enemy.Think(EnemyGuess, GoodAmmount, RegularAmmount);
-
+            NPC.Think(NPC.LastGuess, GoodAmmount, RegularAmmount);
         }
 
         private void ConfirmNum_Click(object sender, RoutedEventArgs e)
         {
-            PLAYER_NUM = tb_PlayerNumber.Text;
+            PlayerCode = tb_PlayerNumber.Text;
 
             // if checks fail
-            if (!RunNumberChecks(PLAYER_NUM, true))
+            if (!RunNumberChecks(PlayerCode, true))
             {
                 return;
             }
 
-            SessionStart(PLAYER_NUM.Length);
+            SessionStart(PlayerCode.Length);
 
         }
 
@@ -176,7 +176,7 @@ namespace NumbersWarGame
         {
             // Now using this button to make the average win rate
 
-            int GamesToPlay = 10000;
+            int GamesToPlay = 100000;
             int Digits = 4;
             double TotalSteps = 0;
 
@@ -184,23 +184,22 @@ namespace NumbersWarGame
             {
 
                 // TODO: Make GetValidNumber more efficient
-                string NPC1Code = GetValidNumber(Digits);
-                EnemyAI NPC2 = new EnemyAI(Digits);
+                string NPC1Code = Utils.GetValidNumber(Utils.GetAllCodes(Digits));
 
+                Enemy NPC2 = new Enemy(Digits);
                 int Steps = 1;
-                
 
                 int Good = 0;
                 int Regular = 0;
                 string Guess = NPC2.MakeGuess();
-                AnswerToNumber(Guess, NPC1Code, out Good, out Regular);
+                Utils.AnswerToNumber(Guess, NPC1Code, out Good, out Regular);
 
                 NPC2.Think(Guess, Good, Regular);
 
                 while (Good != 4)
                 {
                     Guess = NPC2.MakeGuess();
-                    AnswerToNumber(Guess, NPC1Code, out Good, out Regular);
+                    Utils.AnswerToNumber(Guess, NPC1Code, out Good, out Regular);
                     NPC2.Think(Guess, Good, Regular);
 
                     Steps++;
@@ -240,9 +239,9 @@ namespace NumbersWarGame
                     break;
             }
 
-            PLAYER_NUM = GetValidNumber(digits);
+            //PlayerCode = GetValidNumber(Digits);
 
-            SessionStart(PLAYER_NUM.Length);
+            SessionStart(digits);
         }
     }
 }

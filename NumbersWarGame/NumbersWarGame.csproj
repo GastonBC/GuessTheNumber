@@ -59,7 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="EnemyAI.cs" />
+    <Compile Include="Enemy.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="Other\Difficulty.xaml.cs">
       <DependentUpon>Difficulty.xaml</DependentUpon>
@@ -68,6 +68,7 @@
       <DependentUpon>HelpWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWnUtils.cs" />
+    <Compile Include="Utils.cs" />
     <Page Include="Other\Difficulty.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

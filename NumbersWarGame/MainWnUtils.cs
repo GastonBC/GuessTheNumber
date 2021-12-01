@@ -78,63 +78,6 @@ namespace NumbersWarGame
             b_RandomDiff.IsEnabled = false;
         }
 
-        /// <summary>
-        /// Gets a valid, random number for the game
-        /// </summary>
-        private string GetValidNumber(int digits)
-        {
-            string RANDOM_NUM = null;
-
-            int min = Convert.ToInt32(1 * (Math.Pow(10d, digits - 1)));    // 1* (10^x-1) - 1.  eg: 1*(10^4) = 10.000
-            int max = Convert.ToInt32((1 * (Math.Pow(10d, digits))) - 1);  // 1* (10^x) - 1.  eg: 1*(10^5)-1 = 99.999
-
-            Random rd = new Random();
-
-            bool isNumberWrong = true;
-
-            while (isNumberWrong)
-            {
-                RANDOM_NUM = rd.Next(min, max).ToString();
-                if (RunNumberChecks(RANDOM_NUM, false))
-                {
-                    isNumberWrong = false;
-                }
-            }
-            return RANDOM_NUM;
-        }
-
-        /// <summary>
-        /// Provides the answer to the number guessed, needs two out variables to store the answers
-        /// </summary>
-        private void AnswerToNumber(string NumberGuessed, string NumberToCheckAgainst, out int GoodAmmount, out int RegularAmmount)
-        {
-            GoodAmmount = 0;
-            RegularAmmount = 0;
-
-            // First check good numbers. Check player index num against same index on npc
-            for (int i = 0; i < NumberGuessed.Length; i++)
-            {
-                if (NumberGuessed[i] == NumberToCheckAgainst[i])
-                {
-                    GoodAmmount++;
-                }
-            }
-
-            // Then check regular numbers. Check each index agains all indexes of NPC_NUM
-            for (int i = 0; i < NumberGuessed.Length; i++)
-            {
-                for (int n = 0; n < NumberGuessed.Length; n++)
-                {
-                    // If it's a different index (that'd be a good number) and it's the
-                    // same number then increment a regular
-                    if (i != n && NumberGuessed[i] == NumberToCheckAgainst[n])
-                    {
-                        RegularAmmount++;
-                    }
-
-                }
-            }
-        }
 
         private void GameFinished(bool Won, int Steps)
         {//STAT_MostStepsTakenToWin
@@ -179,7 +122,7 @@ namespace NumbersWarGame
             STEPS = 0;
             string Asterix = "";
 
-            Enemy = new EnemyAI(Digits);
+            Enemy = new Enemy(Digits);
 
             foreach (char ch in Enemy.Code)
             {
@@ -188,7 +131,7 @@ namespace NumbersWarGame
 
 
             tb_NPCNumber.Text = Asterix;
-            tb_PlayerNumber.Text = PLAYER_NUM;
+            tb_PlayerNumber.Text = PlayerCode;
 
             tb_NumberTry.IsEnabled = true;
             tb_PlayerNumber.IsEnabled = false;
@@ -228,7 +171,6 @@ namespace NumbersWarGame
                 paintSurface.Children.Add(line);
             }
         }
-
 
         internal static void AddOrUpdateAppSettings(string key, string value)
         {
