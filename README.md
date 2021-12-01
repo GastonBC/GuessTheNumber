@@ -18,8 +18,6 @@ Rules
 
 · Minimum number length is 2, maximum is 10
 
-· Numbers can not start with a 0
-
 · Digits in the number can not repeat (eg 1231 is wrong)
 
 · Number can not contain letters
