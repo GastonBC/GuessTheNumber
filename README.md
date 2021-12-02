@@ -23,3 +23,5 @@ Rules
 · Digits in the number can not repeat (eg 1231 is wrong)
 
 · Number can not contain letters
+
+Note: The only 'real' game is the one inside NumbersWarGame folder, the rest of the folders (names ending with a programming language initials) are just tests done in other languages for the sake of hobbying.
