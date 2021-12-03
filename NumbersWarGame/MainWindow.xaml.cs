@@ -198,7 +198,7 @@ namespace NumbersWarGame
                     break;
             }
 
-            //PlayerCode = GetValidNumber(Digits);
+            PlayerCode = Utils.GetValidNumber(digits);
 
             SessionStart(digits);
         }

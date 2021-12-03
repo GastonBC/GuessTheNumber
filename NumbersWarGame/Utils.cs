@@ -24,12 +24,34 @@ namespace NumbersWarGame
             return PossiblePerms;
         }
 
+
         public static string GetValidNumber(List<string> PossibleGuesses)
         {
             Random rd = new Random();
             int idx = rd.Next(PossibleGuesses.Count());
 
             return PossibleGuesses[idx];
+        }
+
+        /// <summary>
+        /// Alternate code getting
+        /// </summary>
+        public static string GetValidNumber(int Digits)
+        {
+            Random rn = new Random();
+            string Code = "";
+
+            while (Code.Length < Digits)
+            {
+                string dig = rn.Next(10).ToString();
+                while (Code.Contains(dig))
+                {
+                    dig = rn.Next(10).ToString();
+
+                }
+                Code += dig;
+            }
+            return Code;
         }
 
 

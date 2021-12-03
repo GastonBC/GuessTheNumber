@@ -19,8 +19,6 @@ namespace NumberWarsGameCs
             double TotalSteps = 0;
             List<string> ALL_CODES = Utils.GetAllCodes(DIGITS);
 
-            Random rn = new Random();
-
             Console.WriteLine($"Games to play: {GAMES_TO_PLAY}");
             Console.WriteLine($"Digits: {DIGITS}");
             Console.WriteLine($"Press enter when ready");
@@ -31,24 +29,9 @@ namespace NumberWarsGameCs
 
             for (int i = 0; i <= GAMES_TO_PLAY; i++)
             {
-                #region Code
-                // Have to use this method to get a new number instead of GetValidNum because
-                // of pseudo randomness being too slow
-                string NPC1Code = "";
-
-                while (NPC1Code.Length < DIGITS)
-                {
-                    string dig = rn.Next(10).ToString();
-                    while (NPC1Code.Contains(dig))
-                    {
-                        dig = rn.Next(10).ToString();
-
-                    }
-                    NPC1Code += dig;
-                }
-
-                //string NPC1Code = Utils.GetValidNumber(ALL_CODES);
-                #endregion
+                // Have to use this method to get a new number instead of GetValidNum(list) because
+                // of pseudo randomness being too slow to give different numbers
+                string NPC1Code = Utils.GetValidNumber(DIGITS);
 
                 Enemy NPC2 = new Enemy(DIGITS, ALL_CODES);
 
