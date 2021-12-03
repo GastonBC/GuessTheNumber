@@ -6,13 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// BENCHMARK 2021-12-03 - 20.1 secs in 1.000 games, average 5.4
+
 namespace NumberWarsGameCs
 {
     class Program
     {
         static void Main(string[] args)
         {
-            const int GAMES_TO_PLAY = 10000;
+            const int GAMES_TO_PLAY = 1000;
             const int DIGITS = 4;
             double TotalSteps = 0;
             List<string> ALL_CODES = Utils.GetAllCodes(DIGITS);
@@ -30,8 +32,8 @@ namespace NumberWarsGameCs
             for (int i = 0; i <= GAMES_TO_PLAY; i++)
             {
                 #region Code
-                // Seed the randomness to prevent 1 turn guesses due to quick succession
-                // Note, it is still too quick
+                // Have to use this method to get a new number instead of GetValidNum because
+                // of pseudo randomness being too slow
                 string NPC1Code = "";
 
                 while (NPC1Code.Length < DIGITS)
