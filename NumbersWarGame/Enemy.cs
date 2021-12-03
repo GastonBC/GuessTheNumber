@@ -11,7 +11,7 @@ namespace NumbersWarGame
     {
         public Level? Difficulty { get; set; }
         public List<string> PossiblePermutations { get; set; }
-        public List<string> OldGuesses { get; set; }
+        public List<string> OldGuesses { get; }
         public string Code { get; }
         internal string LastGuess { get; set; }
 
@@ -24,10 +24,11 @@ namespace NumbersWarGame
             Code = Utils.GetValidNumber(PossiblePermutations);
         }
 
-        // Requires the list of permutations to make the class faster
+        // Requires the list of permutations to make the class faster and a random generator
+        // This constructor is meant for testing
         public Enemy(int Digits, List<string> permutations)
         {
-            PossiblePermutations = permutations;
+            PossiblePermutations = new List<string>(permutations);
 
             OldGuesses = new List<string>();
             Code = Utils.GetValidNumber(PossiblePermutations);
@@ -48,10 +49,12 @@ namespace NumbersWarGame
             return Guess;
         }
 
+
         public void Think(string LastGuess, int GoodAmmount, int RegularAmmount )
         {
+
             // Create a new possible permutations list to be able to modify the original
-            foreach(string Possibilities in new List<string>(PossiblePermutations))
+            foreach (string Possibilities in new List<string>(PossiblePermutations))
             {
                 int Good;
                 int Regular;

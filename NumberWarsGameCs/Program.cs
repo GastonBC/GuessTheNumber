@@ -8,35 +8,50 @@ using System.Threading.Tasks;
 
 namespace NumberWarsGameCs
 {
-    // TODO: Still not as quick as expected
     class Program
     {
         static void Main(string[] args)
         {
-            // Now using this button to make the average win rate
-
-            int GamesToPlay = 1000;
-            int Digits = 4;
+            const int GAMES_TO_PLAY = 10000;
+            const int DIGITS = 4;
             double TotalSteps = 0;
+            List<string> ALL_CODES = Utils.GetAllCodes(DIGITS);
 
-            Console.WriteLine($"Games to play: {GamesToPlay}");
-            Console.WriteLine($"Digits: {Digits}");
+            Random rn = new Random();
+
+            Console.WriteLine($"Games to play: {GAMES_TO_PLAY}");
+            Console.WriteLine($"Digits: {DIGITS}");
             Console.WriteLine($"Press enter when ready");
             Console.ReadLine();
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            List<string> ALL_CODES = Utils.GetAllCodes(Digits);
-
-            for (int i = 0; i <= GamesToPlay; i++)
+            for (int i = 0; i <= GAMES_TO_PLAY; i++)
             {
+                #region Code
                 // Seed the randomness to prevent 1 turn guesses due to quick succession
-                string NPC1Code = Utils.GetValidNumber(ALL_CODES, i);
+                // Note, it is still too quick
+                string NPC1Code = "";
 
-                Enemy NPC2 = new Enemy(Digits, ALL_CODES);
+                while (NPC1Code.Length < DIGITS)
+                {
+                    string dig = rn.Next(10).ToString();
+                    while (NPC1Code.Contains(dig))
+                    {
+                        dig = rn.Next(10).ToString();
+
+                    }
+                    NPC1Code += dig;
+                }
+
+                //string NPC1Code = Utils.GetValidNumber(ALL_CODES);
+                #endregion
+
+                Enemy NPC2 = new Enemy(DIGITS, ALL_CODES);
 
                 NPC2.MakeGuess();
+
                 int Steps = 1;
 
                 int Good;
@@ -48,7 +63,7 @@ namespace NumberWarsGameCs
 
                 while (NPC1Code != NPC2.LastGuess)
                 {
-                    NPC2.LastGuess = NPC2.MakeGuess();
+                    NPC2.MakeGuess();
 
                     Utils.AnswerToGuess(NPC2.LastGuess, NPC1Code, out Good, out Regular);
 
@@ -60,14 +75,13 @@ namespace NumberWarsGameCs
                 TotalSteps += Steps;
 
                 Console.WriteLine($"{i} - Steps: {Steps}");
-
             }
 
             stopWatch.Stop();
             // Get the elapsed time as a TimeSpan value.
             TimeSpan ts = stopWatch.Elapsed;
 
-            Console.WriteLine($"Average: {TotalSteps / GamesToPlay}");
+            Console.WriteLine($"Average: {TotalSteps / GAMES_TO_PLAY}");
             Console.WriteLine($"Time elapsed: {ts}");
             Console.ReadLine();
         }

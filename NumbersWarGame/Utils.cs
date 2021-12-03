@@ -32,14 +32,6 @@ namespace NumbersWarGame
             return PossibleGuesses[idx];
         }
 
-        /// Added seed when multiple requests are done in a short time
-        public static string GetValidNumber(List<string> PossibleGuesses, int seed)
-        {
-            Random rd = new Random(seed);
-            int idx = rd.Next(PossibleGuesses.Count());
-
-            return PossibleGuesses[idx];
-        }
 
         public static void AnswerToGuess(string Guess, string Code, out int GoodAmmount, out int RegularAmmount)
         {
