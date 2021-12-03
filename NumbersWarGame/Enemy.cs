@@ -15,6 +15,7 @@ namespace NumbersWarGame
         public string Code { get; }
         internal string LastGuess { get; set; }
 
+        // Common constructor when speed is not an issue
         public Enemy(int Digits)
         {
             PossiblePermutations = new List<string>(Utils.GetAllCodes(Digits));
@@ -23,7 +24,14 @@ namespace NumbersWarGame
             Code = Utils.GetValidNumber(PossiblePermutations);
         }
 
-        
+        // Requires the list of permutations to make the class faster
+        public Enemy(int Digits, List<string> permutations)
+        {
+            PossiblePermutations = permutations;
+
+            OldGuesses = new List<string>();
+            Code = Utils.GetValidNumber(PossiblePermutations);
+        }
 
         public string MakeGuess()
         {
@@ -47,7 +55,7 @@ namespace NumbersWarGame
             {
                 int Good;
                 int Regular;
-                Utils.AnswerToNumber(LastGuess, Possibilities, out Good, out Regular);
+                Utils.AnswerToGuess(LastGuess, Possibilities, out Good, out Regular);
 
                 if (GoodAmmount != Good || RegularAmmount != Regular)
                 {

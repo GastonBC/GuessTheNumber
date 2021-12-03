@@ -32,32 +32,33 @@ namespace NumbersWarGame
             return PossibleGuesses[idx];
         }
 
-        public static void AnswerToNumber(string Guess, string Code, out int GoodAmmount, out int RegularAmmount)
+        /// Added seed when multiple requests are done in a short time
+        public static string GetValidNumber(List<string> PossibleGuesses, int seed)
+        {
+            Random rd = new Random(seed);
+            int idx = rd.Next(PossibleGuesses.Count());
+
+            return PossibleGuesses[idx];
+        }
+
+        public static void AnswerToGuess(string Guess, string Code, out int GoodAmmount, out int RegularAmmount)
         {
             GoodAmmount = 0;
             RegularAmmount = 0;
-
-            // First check good numbers. Check player index num against same index on npc
+            
             for (int i = 0; i < Guess.Length; i++)
             {
-                if (Guess[i] == Code[i])
+                // Code contains the guess digit
+                if (Code.Contains(Guess[i]))
                 {
-                    GoodAmmount++;
-                }
-            }
-
-            // Then check regular numbers. Check each index agains all indexes of NPC_NUM
-            for (int i = 0; i < Guess.Length; i++)
-            {
-                for (int n = 0; n < Guess.Length; n++)
-                {
-                    // If it's a different index (that'd be a good number) and it's the
-                    // same number then increment a regular
-                    if (i != n && Guess[i] == Code[n])
+                    // Guess digit positioning is also correct
+                    if (Guess[i] == Code[i])
                     {
-                        RegularAmmount++;
+                        GoodAmmount++;
+                        continue;
                     }
 
+                    RegularAmmount++;
                 }
             }
         }

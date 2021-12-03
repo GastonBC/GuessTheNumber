@@ -42,7 +42,7 @@ namespace NumbersWarGame
 
             int GoodAmmount;
             int RegularAmmount;
-            Utils.AnswerToNumber(PlayerGuess, Enemy.Code, out GoodAmmount, out RegularAmmount);
+            Utils.AnswerToGuess(PlayerGuess, Enemy.Code, out GoodAmmount, out RegularAmmount);
 
             WriteGuessLn(tb_NumberTry.Text + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
             STEPS++;
@@ -74,7 +74,7 @@ namespace NumbersWarGame
 
             int GoodAmmount;
             int RegularAmmount;
-            Utils.AnswerToNumber(NPC.LastGuess, PlayerCode, out GoodAmmount, out RegularAmmount);
+            Utils.AnswerToGuess(NPC.LastGuess, PlayerCode, out GoodAmmount, out RegularAmmount);
 
             WriteLn(NPC.LastGuess + " - " + $"{GoodAmmount}G - {RegularAmmount}R");
 

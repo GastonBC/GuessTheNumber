@@ -4,17 +4,12 @@
 #include <string>
 #include <iterator>
 #include <algorithm>
+#ifndef Utils_H
+#define Utils_H
+#endif // !Utils_H
 
 using namespace std;
 
-#pragma once
-class Utils
-{
-public:
-	static std::string GiveNum(int digits);
+std::string GiveNum(int digits);
 
-	static std::vector<int> GuessResult(std::string Code, std::string Guess, int& GoodAmmount, int& RegularAmmount);
-
-private:
-	Utils() {}
-};
+std::vector<int> GuessResult(std::string Code, std::string Guess, int& GoodAmmount, int& RegularAmmount);

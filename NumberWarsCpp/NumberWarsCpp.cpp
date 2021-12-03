@@ -5,26 +5,17 @@
 #include <iterator>
 #include <algorithm>
 #include "Utils.h"
+#include <set>
 
 using namespace std;
 
-std::string GiveNum(int digits)
-{
-    std::string in = "0123456789", out;
-
-    std::sample(in.begin(), in.end(), std::back_inserter(out), digits, std::mt19937{ std::random_device{}() });
-
-    return out;
-}
 
 int main()
 {
-
     int GAME_NUMBER = 10000;
     int TOTAL_STEPS = 0;
     int DIGITS = 4;
 
-    
 
 
     std::string Code = GiveNum(4);

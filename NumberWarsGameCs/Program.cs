@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 
 namespace NumberWarsGameCs
 {
+    // TODO: Still not as quick as expected
     class Program
     {
         static void Main(string[] args)
         {
             // Now using this button to make the average win rate
 
-            int GamesToPlay = 10000;
+            int GamesToPlay = 1000;
             int Digits = 4;
             double TotalSteps = 0;
 
@@ -26,11 +27,14 @@ namespace NumberWarsGameCs
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            List<string> ALL_CODES = Utils.GetAllCodes(Digits);
+
             for (int i = 0; i <= GamesToPlay; i++)
             {
-                string NPC1Code = Utils.GetValidNumber(Utils.GetAllCodes(Digits));
+                // Seed the randomness to prevent 1 turn guesses due to quick succession
+                string NPC1Code = Utils.GetValidNumber(ALL_CODES, i);
 
-                Enemy NPC2 = new Enemy(Digits);
+                Enemy NPC2 = new Enemy(Digits, ALL_CODES);
 
                 NPC2.MakeGuess();
                 int Steps = 1;
@@ -38,7 +42,7 @@ namespace NumberWarsGameCs
                 int Good;
                 int Regular;
 
-                Utils.AnswerToNumber(NPC2.LastGuess, NPC1Code, out Good, out Regular);
+                Utils.AnswerToGuess(NPC2.LastGuess, NPC1Code, out Good, out Regular);
 
                 NPC2.Think(NPC2.LastGuess, Good, Regular);
 
@@ -46,7 +50,7 @@ namespace NumberWarsGameCs
                 {
                     NPC2.LastGuess = NPC2.MakeGuess();
 
-                    Utils.AnswerToNumber(NPC2.LastGuess, NPC1Code, out Good, out Regular);
+                    Utils.AnswerToGuess(NPC2.LastGuess, NPC1Code, out Good, out Regular);
 
                     NPC2.Think(NPC2.LastGuess, Good, Regular);
 
@@ -65,6 +69,7 @@ namespace NumberWarsGameCs
 
             Console.WriteLine($"Average: {TotalSteps / GamesToPlay}");
             Console.WriteLine($"Time elapsed: {ts}");
+            Console.ReadLine();
         }
     }
 }
