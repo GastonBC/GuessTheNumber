@@ -3,8 +3,8 @@ import utils
 import time
 from enemy import Enemy
 
-GAMES_TO_PLAY = 1000
-DIGITS = 5
+GAMES_TO_PLAY = 10000
+DIGITS = 4
 ALL_CODES = utils.get_all_codes(DIGITS)
 
 total_steps = 0
@@ -33,7 +33,7 @@ for i in range(0, GAMES_TO_PLAY):
         foe.think(good, regular)
     
     total_steps += game_seps
-    print("{} - Steps: {}".format(i, game_seps))
+    # print("{} - Steps: {}".format(i, game_seps))
 
 end = time.time() 
 print("Time elapsed:", end - start)

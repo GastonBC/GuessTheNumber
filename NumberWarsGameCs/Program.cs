@@ -14,7 +14,7 @@ namespace NumberWarsGameCs
     {
         static void Main(string[] args)
         {
-            const int GAMES_TO_PLAY = 1000;
+            const int GAMES_TO_PLAY = 10000;
             const int DIGITS = 4;
             double TotalSteps = 0;
             List<string> ALL_CODES = Utils.GetAllCodes(DIGITS);
@@ -59,7 +59,7 @@ namespace NumberWarsGameCs
 
                 TotalSteps += Steps;
 
-                Console.WriteLine($"{i} - Steps: {Steps}");
+                //Console.WriteLine($"{i} - Steps: {Steps}");
             }
 
             stopWatch.Stop();
