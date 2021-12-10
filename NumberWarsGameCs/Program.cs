@@ -59,7 +59,7 @@ namespace NumberWarsGameCs
 
                 TotalSteps += Steps;
 
-                //Console.WriteLine($"{i} - Steps: {Steps}");
+                Console.WriteLine($"{i} - Steps: {Steps}");
             }
 
             stopWatch.Stop();
