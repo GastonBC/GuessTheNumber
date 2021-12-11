@@ -7,16 +7,16 @@ pub mod enemy
 
     pub struct Enemy
     {
-        pub code: Vec<i8>,
-        pub old_guesses: Vec<Vec<i8>>,
-        pub last_guess: Vec<i8>,
-        pub possible_permutations: Vec<Vec<i8>>
+        pub code: Vec<u8>,
+        pub old_guesses: Vec<Vec<u8>>,
+        pub last_guess: Vec<u8>,
+        pub possible_permutations: Vec<Vec<u8>>
     }
 
 
     impl Enemy
     {
-        pub fn new_by_possibilities(possible_guesses: &Vec<Vec<i8>>) -> Self
+        pub fn new_by_possibilities(possible_guesses: &Vec<Vec<u8>>) -> Self
         {
             let mut rng = rand::thread_rng();
             let choice = possible_guesses.choose(&mut rng).unwrap();
@@ -31,7 +31,7 @@ pub mod enemy
             }
         }
 
-        pub fn new_by_digits(digits: &i8) -> Self
+        pub fn new_by_digits(digits: &u8) -> Self
         {
             let mut rng = rand::thread_rng();
             let perms = utils::all_permutations(&digits);
@@ -52,28 +52,27 @@ pub mod enemy
         }
 
 
-        pub fn think(&mut self, good_ammount: i8, regular_ammount: i8)
+        // pub fn think(&mut self, good_ammount: u8, regular_ammount: u8) {
+        //     self.possible_permutations = self.possible_permutations
+        //         .into_iter()
+        //         .filter(|possible_code| {
+        //             utils::answer_to_guess(possible_code, &self.last_guess) == (good_ammount, regular_ammount)
+        //         })
+        //         .collect();
+        //     }
+        
+        pub fn think(&mut self, good_ammount: u8, regular_ammount: u8) 
         {
-            
-            for possible_code in self.possible_permutations.clone()
+            self.possible_permutations.retain(|possible_code| 
             {
-                let answer = utils::answer_to_guess(&possible_code, &self.last_guess);
-
-                if answer.0 != good_ammount || answer.1 != regular_ammount
-                {
-                    match self.possible_permutations.iter().position(|r| r == &possible_code)
-                    {
-                        Some(idx) => { self.possible_permutations.swap_remove(idx); }
-                        None => panic!("Panicked at thinking")
-                    }
-                }
-            }
-            
+                utils::answer_to_guess(possible_code, &self.last_guess) == (good_ammount, regular_ammount)
+            });
         }
 
-        pub fn make_guess(&mut self) -> Vec<i8>
+        pub fn make_guess(&mut self) -> Vec<u8>
         {
             let mut guess = utils::number_from_list(&self.possible_permutations);
+            
             while self.old_guesses.contains(&guess)
             {
                 guess = utils::number_from_list(&self.possible_permutations);

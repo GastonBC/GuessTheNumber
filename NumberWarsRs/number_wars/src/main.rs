@@ -10,13 +10,11 @@ use std::time::Instant;
 
 fn main() 
 {
-    const GAMES_TO_PLAY: i32 = 100;
-    const DIGITS: i8 = 4;
+    const GAMES_TO_PLAY: i32 = 10000;
+    const DIGITS: u8 = 4;
     let all_codes = utils::all_permutations(&DIGITS);
 
     let mut total_steps = 0;
-    
-
 
     let start_timer = Instant::now();
     for i in 0..GAMES_TO_PLAY
@@ -49,6 +47,6 @@ fn main()
     }
 
     let average: f32 = total_steps as f32 / GAMES_TO_PLAY as f32;
-    println!("Time for 100 games {}", start_timer.elapsed().as_secs());
+    println!("Time for {} games {}",GAMES_TO_PLAY, start_timer.elapsed().as_secs_f32());
     println!("Average number of count: {}", average) 
 }

@@ -3,7 +3,7 @@ pub mod utils
     use itertools::Itertools;
     use rand::seq::SliceRandom;
 
-    pub fn all_permutations(digits: &i8) -> Vec<Vec<i8>>
+    pub fn all_permutations(digits: &u8) -> Vec<Vec<u8>>
     {
         let mut all_codes = Vec::new();
         let num_usize = digits.clone() as usize;
@@ -16,7 +16,7 @@ pub mod utils
         return all_codes;
     }
 
-    pub fn number_from_list(possible_numbers: &Vec<Vec<i8>>) -> Vec<i8>
+    pub fn number_from_list(possible_numbers: &Vec<Vec<u8>>) -> Vec<u8>
     {
         
         let mut rng = rand::thread_rng();
@@ -24,10 +24,10 @@ pub mod utils
         return choice.clone();
     }
 
-    pub fn answer_to_guess(guess: &Vec<i8>, code: &Vec<i8>) -> (i8, i8)
+    pub fn answer_to_guess(guess: &Vec<u8>, code: &Vec<u8>) -> (u8, u8)
     {
-        let mut good: i8 = 0;
-        let mut regular: i8 = 0;
+        let mut good: u8 = 0;
+        let mut regular: u8 = 0;
 
         for (idx, digit) in guess.iter().enumerate()
         {
@@ -47,7 +47,7 @@ pub mod utils
         (good, regular)
     }
 
-    pub fn vec_as_string(vec_code: &Vec<i8>) -> String
+    pub fn vec_as_string(vec_code: &Vec<u8>) -> String
     {
         let joined = vec_code.iter().join("");
         return joined;
