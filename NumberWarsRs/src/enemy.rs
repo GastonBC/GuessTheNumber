@@ -54,13 +54,15 @@ pub mod enemy
 
         // pub fn think(&mut self, good_ammount: u8, regular_ammount: u8) {
         //     self.possible_permutations = self.possible_permutations
-        //         .into_iter()
-        //         .filter(|possible_code| {
+        //         .iter()
+        //         .filter(|&possible_code| {
         //             utils::answer_to_guess(possible_code, &self.last_guess) == (good_ammount, regular_ammount)
         //         })
+        //         .cloned()
         //         .collect();
-        //     }
+        // }
         
+        // // 38 secs
         pub fn think(&mut self, good_ammount: u8, regular_ammount: u8) 
         {
             self.possible_permutations.retain(|possible_code| 
