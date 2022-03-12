@@ -43,7 +43,7 @@ fn main()
 
         total_steps += game_steps;
 
-        println!("{} - Steps: {}", i, game_steps)
+        // println!("{} - Steps: {}", i, game_steps)
     }
 
     let average: f32 = total_steps as f32 / GAMES_TO_PLAY as f32;
